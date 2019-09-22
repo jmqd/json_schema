@@ -1,3 +1,6 @@
+use serde::{Serialize, Deserialize};
+use std::collections::HashMap;
+
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct JsonSchema {
     /// A description of this object.
@@ -72,8 +75,43 @@ pub struct JsonSchema {
     /// The value type for this schema. A list of values can be found here:
     /// http://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
     #[serde(rename = "type")]
-    pub type_: Option<String>,
+    pub type_: Option<JsonSchemaType>,
 
     /// Additional information about this property.
     pub annotations: Option<JsonSchemaAnnotations>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum JsonSchemaType {
+    Array,
+    Boolean,
+    Integer,
+    Null,
+    Number,
+    Object,
+    String
+}
+
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+pub struct JsonSchemaVariant {
+    /// The map of discriminant value to schema to use for parsing.
+    pub map: Option<Vec<JsonSchemaVariantMap>>,
+
+    /// The name of the type discriminant property.
+    pub discriminant: Option<String>,
+}
+
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+pub struct JsonSchemaAnnotations {
+    /// A list of methods for which this property is required on requests.
+    pub required: Option<Vec<String>>,
+}
+
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+pub struct JsonSchemaVariantMap {
+    pub type_value: Option<String>,
+
+    #[serde(rename="$ref")]
+    pub ref_: Option<String>,
 }
